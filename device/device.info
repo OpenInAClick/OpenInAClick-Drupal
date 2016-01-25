@@ -1,0 +1,6 @@
+name = device
+description = A Photon or Spark compatible device
+package = OpenInAClick
+core = 7.x
+files[] = device.install
+files[] = device.module
