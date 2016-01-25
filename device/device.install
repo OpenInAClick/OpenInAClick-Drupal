@@ -1,4 +1,66 @@
 <?php
+function _device_installed_fields() {
+    $t = get_t();
+    return array(
+        'device_deviceid' => array(
+            'field_name' => 'device_deviceid',
+            'label' => $t('id of the spark device'),
+            'type' => 'text'
+        ),
+        'device_accesstoken' => array(
+            'field_name' => 'device_accesstoken',
+            'label' => $t('Access token of the device'),
+            'type' => 'text'
+        )
+    );
+}
+
+function _device_installed_instances() {
+    $t = get_t();
+    return array(
+        'device_deviceid' => array(
+            'field_name' => 'device_deviceid',
+            'type' => 'text',
+            'label' => $t('id of the spark device'),
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+            'display' => array(
+                'example_node_list' => array(
+                    'label' => $t('id of the spark device'),
+                    'type' => 'text'
+                )
+            )
+        ),
+        'device_accesstoken' => array(
+            'field_name' => 'device_accesstoken',
+            'type' => 'text',
+            'label' => $t('Access token of the device'),
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+            'display' => array(
+                'example_node_list' => array(
+                    'label' => $t('Access token of the device'),
+                    'type' => 'text'
+                )
+            )
+        )
+    );
+}
+
+function add_custom_fields() {
+    foreach (_device_installed_fields() as $field) {
+        field_create_field($field);
+    }
+    foreach (_device_installed_instances() as $fieldinstance) {
+        $fieldinstance['entity_type'] = 'node';
+        $fieldinstance['bundle'] = 'device';
+        print_r($fieldinstance);
+        field_create_instance($fieldinstance);
+    }
+}
+
 /**
  * Implements hook_install().
  */
@@ -6,4 +68,5 @@ function device_install() {
     node_types_rebuild();
     $types = node_type_get_types();
     node_add_body_field($types['device']);
+    add_custom_fields();
 }

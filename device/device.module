@@ -8,8 +8,7 @@ function device_node_info() {
             'name' => t('Device'),
             'base' => 'device',
             'description' => t('You can define new spark-compatible devices here'),
-            'has_title' => TRUE,
-            'title_label' => t('Product title')
+            'has_title' => TRUE
          )
     );
 }
