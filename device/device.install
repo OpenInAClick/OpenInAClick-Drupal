@@ -26,7 +26,7 @@ function _device_installed_instances() {
                 'type' => 'text_textfield'
             ),
             'display' => array(
-                'example_node_list' => array(
+                'device_deviceid_list' => array(
                     'label' => $t('id of the spark device'),
                     'type' => 'text'
                 )
@@ -40,13 +40,37 @@ function _device_installed_instances() {
                 'type' => 'text_textfield'
             ),
             'display' => array(
-                'example_node_list' => array(
+                'device_accesstoken_list' => array(
                     'label' => $t('Access token of the device'),
                     'type' => 'text'
                 )
             )
         )
     );
+}
+
+function device_uninstall() {
+    $ournewtype = 'device';
+    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+    $result = db_query($sql, array(':type' => $ournewtype));
+    $nodeids = array();
+    foreach ($result as $row) {
+        $nodeids[] = $row->nid;
+    }
+    node_delete_multiple($nodeids);
+    delete_custom_fields();
+    node_type_delete($ournewtype);
+    field_purge_batch(500);
+}
+
+function delete_custom_fields() {
+    foreach (array_keys(_device_installed_fields()) as $field) {
+        field_delete_field($field);
+    }
+    $instances = field_info_instances('node', 'device');
+    foreach ($instances as $instance_name => $fieldinstance) {
+        field_delete_instance($fieldinstance);
+    }
 }
 
 function add_custom_fields() {
