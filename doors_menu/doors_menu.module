@@ -26,7 +26,7 @@ function doors_menu_block_view($delta = '') {
           $id = field_get_items('node', $node, 'device_id')[0]['value'];
           $at = field_get_items('node', $node, 'device_accesstoken')[0]['value'];
 
-          
+
       }
 
       ?>
@@ -43,9 +43,11 @@ function doors_menu_block_view($delta = '') {
       ->entityCondition('entity_type', 'node')
       ->entityCondition('bundle', $show_nodes_list)
       ->propertyCondition('status', 1)
+      ->addTag('node_access')
       ->propertyOrderBy('created', 'DESC');
 
       $result = $query->execute();
+
       $nodes = array();
       if (isset($result['node'])) {
         $nids = array_keys($result['node']);
