@@ -1,0 +1,78 @@
+<?php
+
+/**
+* Implements hook_block_info().
+*/
+function doors_menu_block_info() {
+  $blocks = array();
+
+  $blocks['YOUR_BLOCK_ABC'] = array(
+    'info' => t('YOUR BLOCK NAME'),
+  );
+
+  return $blocks;
+}
+
+/**
+* Implements hook_block_view().
+*/
+function doors_menu_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'YOUR_BLOCK_ABC':
+      if(isset($_GET['clicked_id'])) {
+          $node = node_load($_GET['clicked_id']);
+          $id = field_get_items('node', $node, 'device_id')[0]['value'];
+          $at = field_get_items('node', $node, 'device_accesstoken')[0]['value'];
+
+          
+      }
+
+      ?>
+      <script>
+          function doors_menu_block_view_callAPI(nid) {
+            alert(nid);
+          }
+      </script>
+      <?php
+      $show_nodes_list = array('device');
+      //Based on the node types create a query and then load the node types
+      $query = new EntityFieldQuery();
+      $query
+      ->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', $show_nodes_list)
+      ->propertyCondition('status', 1)
+      ->propertyOrderBy('created', 'DESC');
+
+      $result = $query->execute();
+      $nodes = array();
+      if (isset($result['node'])) {
+        $nids = array_keys($result['node']);
+        $nodes = node_load_multiple($nids);
+      }
+
+      $content = "";
+      $list = array();
+      foreach ($nodes as $node) {
+        $options = array('absolute' => TRUE);
+        $url = url('node/' . $node->nid, $options);
+        $items = field_get_items('node', $node, 'device_accesstoken');
+        $content .= "<div>". $node->title ."<div class='buttons'><a href='?clicked_id=". $node->nid ."'>Open / Close</a></div></div>";
+        $list[] = ''.$node->title.'';
+      }
+
+      $block = array(
+        'subject' => t('My doors'),
+        'content' => $content,
+      );
+      return $block;
+  }
+
+  return $block;
+}
+
+function _doors_menu_BLOCK_ABC_CONTENT() {
+  $output = t('');
+  return $output;
+}

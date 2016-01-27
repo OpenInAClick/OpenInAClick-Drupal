@@ -1,0 +1,4 @@
+name = doors_menu
+description = This module displays various nodes in a block on your Drupal site.
+core = 7.x
+package = OpenInAClick
