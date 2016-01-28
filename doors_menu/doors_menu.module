@@ -25,26 +25,27 @@ function doors_menu_block_view($delta = '') {
           $node = node_load($_GET['clicked_id']);
           $id = field_get_items('node', $node, 'device_id')[0]['value'];
           $at = field_get_items('node', $node, 'device_accesstoken')[0]['value'];
+          $delay = field_get_items('node', $node, 'device_delay')[0]['value'];
 
+          $ch = curl_init();
 
+          curl_setopt($ch, CURLOPT_URL,"https://api.spark.io/v1/devices/". $id ."/toggleLock");
+          curl_setopt($ch, CURLOPT_POST, 1);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=" . $at . "&arg=" . $delay);
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+          curl_exec ($ch);
+          curl_close ($ch);
       }
 
-      ?>
-      <script>
-          function doors_menu_block_view_callAPI(nid) {
-            alert(nid);
-          }
-      </script>
-      <?php
       $show_nodes_list = array('device');
       //Based on the node types create a query and then load the node types
       $query = new EntityFieldQuery();
       $query
-      ->entityCondition('entity_type', 'node')
-      ->entityCondition('bundle', $show_nodes_list)
-      ->propertyCondition('status', 1)
-      ->addTag('node_access')
-      ->propertyOrderBy('created', 'DESC');
+        ->entityCondition('entity_type', 'node')
+        ->entityCondition('bundle', $show_nodes_list)
+        ->propertyCondition('status', 1)
+        ->addTag('node_access')
+        ->propertyOrderBy('created', 'DESC');
 
       $result = $query->execute();
 
