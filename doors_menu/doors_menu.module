@@ -23,18 +23,22 @@ function doors_menu_block_view($delta = '') {
     case 'YOUR_BLOCK_ABC':
       if(isset($_GET['clicked_id'])) {
           $node = node_load($_GET['clicked_id']);
-          $id = field_get_items('node', $node, 'device_id')[0]['value'];
+          $items = field_get_items('node', $node, 'device_accesstoken');
+
+          $id = field_get_items('node', $node, 'device_deviceid')[0]['value'];
           $at = field_get_items('node', $node, 'device_accesstoken')[0]['value'];
           $delay = field_get_items('node', $node, 'device_delay')[0]['value'];
 
           $ch = curl_init();
+          $url = "https://api.spark.io/v1/devices/". $id ."/toggleLock";
 
-          curl_setopt($ch, CURLOPT_URL,"https://api.spark.io/v1/devices/". $id ."/toggleLock");
+          curl_setopt($ch, CURLOPT_URL, $url);
           curl_setopt($ch, CURLOPT_POST, 1);
           curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=" . $at . "&arg=" . $delay);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-          curl_exec ($ch);
+          $content = curl_exec ($ch);
           curl_close ($ch);
+          //echo $content;
       }
 
       $show_nodes_list = array('device');
@@ -60,7 +64,6 @@ function doors_menu_block_view($delta = '') {
       foreach ($nodes as $node) {
         $options = array('absolute' => TRUE);
         $url = url('node/' . $node->nid, $options);
-        $items = field_get_items('node', $node, 'device_accesstoken');
         $content .= "<div>". $node->title ."<div class='buttons'><a href='?clicked_id=". $node->nid ."'>Open / Close</a></div></div>";
         $list[] = ''.$node->title.'';
       }
