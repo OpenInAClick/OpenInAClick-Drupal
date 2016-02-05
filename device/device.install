@@ -15,7 +15,7 @@ function _device_installed_fields() {
         'device_delay' => array(
             'field_name' => 'device_delay',
             'label' => $t('Delay time (high to low) of the device'),
-            'type' => 'number'
+            'type' => 'number_integer'
         )
     );
 }
@@ -56,12 +56,12 @@ function _device_installed_instances() {
           'type' => 'text',
           'label' => $t('Delay time (high to low) of the device'),
           'widget' => array(
-              'type' => 'number'
+              'type' => 'number_integer'
           ),
           'display' => array(
               'device_delay' => array(
                   'label' => $t('Delay time (high to low) of the device (in seconds)'),
-                  'type' => 'number'
+                  'type' => 'number_integer'
               )
           )
       )

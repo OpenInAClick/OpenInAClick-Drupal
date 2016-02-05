@@ -6,8 +6,8 @@
 function doors_menu_block_info() {
   $blocks = array();
 
-  $blocks['YOUR_BLOCK_ABC'] = array(
-    'info' => t('YOUR BLOCK NAME'),
+  $blocks['DOORS_MENU'] = array(
+    'info' => t('Doors menu'),
   );
 
   return $blocks;
@@ -20,7 +20,7 @@ function doors_menu_block_view($delta = '') {
   $block = array();
 
   switch ($delta) {
-    case 'YOUR_BLOCK_ABC':
+    case 'DOORS_MENU':
       if(isset($_GET['clicked_id'])) {
           $node = node_load($_GET['clicked_id']);
           $items = field_get_items('node', $node, 'device_accesstoken');
