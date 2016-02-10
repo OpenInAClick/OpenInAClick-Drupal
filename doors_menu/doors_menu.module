@@ -17,12 +17,18 @@ function doors_menu_block_info() {
 * Implements hook_block_view().
 */
 function doors_menu_block_view($delta = '') {
+  global $user;
   $block = array();
 
   switch ($delta) {
     case 'DOORS_MENU':
       if(isset($_GET['clicked_id'])) {
           $node = node_load($_GET['clicked_id']);
+
+          if (!node_access('view', $node)) {
+            die("Access denied");
+          }
+
           $items = field_get_items('node', $node, 'device_accesstoken');
 
           $id = field_get_items('node', $node, 'device_deviceid')[0]['value'];
@@ -41,15 +47,16 @@ function doors_menu_block_view($delta = '') {
           //echo $content;
       }
 
-      $show_nodes_list = array('device');
       //Based on the node types create a query and then load the node types
       $query = new EntityFieldQuery();
       $query
         ->entityCondition('entity_type', 'node')
-        ->entityCondition('bundle', $show_nodes_list)
+        ->entityCondition('bundle', array('device'))
         ->propertyCondition('status', 1)
+        ->propertyOrderBy('created', 'DESC')
+        ->propertyCondition('status', NODE_PUBLISHED)
         ->addTag('node_access')
-        ->propertyOrderBy('created', 'DESC');
+        ->addMetaData('account', $user);
 
       $result = $query->execute();
 
@@ -62,6 +69,9 @@ function doors_menu_block_view($delta = '') {
       $content = "";
       $list = array();
       foreach ($nodes as $node) {
+        if (!node_access('view', $node)) {
+          continue;
+        }
         $options = array('absolute' => TRUE);
         $url = url('node/' . $node->nid, $options);
         $content .= "<div>". $node->title ."<div class='buttons'><a href='?clicked_id=". $node->nid ."'>Open / Close</a></div></div>";
