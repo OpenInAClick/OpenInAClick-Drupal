@@ -20,6 +20,26 @@ function _device_installed_fields() {
     );
 }
 
+// implementation of hook_field_create_instance()
+// sets all labels to Hidden for new fields
+function device_field_create_instance($instance){
+  // fetch the instance info
+  $instance_info = field_info_instance(
+    $instance['entity_type'],
+    $instance['field_name'],
+    $instance['bundle']
+  );
+
+  // set label in each display to hidden
+  foreach( $instance_info['display'] as &$display ){
+    $display['label'] = 'hidden';
+    $display['format'] = 'hidden';
+  }
+
+  // save back to disk
+  field_update_instance($instance_info);
+}
+
 function _device_installed_instances() {
     $t = get_t();
     return array(
@@ -32,8 +52,8 @@ function _device_installed_instances() {
             ),
             'display' => array(
                 'device_deviceid_list' => array(
-                    'label' => $t('id of the spark device'),
-                    'type' => 'text'
+                  'label' => 'hidden',
+                  'type' => 'text'
                 )
             )
         ),
@@ -46,8 +66,8 @@ function _device_installed_instances() {
             ),
             'display' => array(
                 'device_accesstoken_list' => array(
-                    'label' => $t('Access token of the device'),
-                    'type' => 'text'
+                  'label' => 'hidden',
+                  'type' => 'text'
                 )
             )
         ),
@@ -60,8 +80,8 @@ function _device_installed_instances() {
           ),
           'display' => array(
               'device_delay' => array(
-                  'label' => $t('Delay time (high to low) of the device (in seconds)'),
-                  'type' => 'number_integer'
+                'label' => 'hidden',
+                'type' => 'text'
               )
           )
       )
