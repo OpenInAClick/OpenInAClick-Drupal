@@ -112,6 +112,38 @@ function delete_custom_fields() {
     }
 }
 
+/**
+ * Add new field to field data and revision tables.
+ */
+function device_update_7500(&$sandbox) {
+    $myField_name = "device_pin";
+    if(!field_info_field($myField_name)) // check if the field already exists.
+    {
+        $field = array(
+            'field_name'    => $myField_name,
+            'type'          => 'text',
+        );
+        field_create_field($field);
+
+        $field_instance = array(
+          'field_name' => $myField_name,
+          'type' => 'text',
+          'label'         => t('Desired pin number for the device (e.g D0, D1 etc)'),
+          'widget' => array(
+              'type' => 'text_textfield'
+          ),
+          'display' => array(
+              'device_accesstoken_list' => array(
+                'label' => 'hidden',
+                'type' => 'text'
+              )
+          )
+        );
+        field_create_instance($field_instance);
+        drupal_set_message("Field created successfully!");
+    }
+}
+
 function add_custom_fields() {
     foreach (_device_installed_fields() as $field) {
         field_create_field($field);
