@@ -1,5 +1,6 @@
 <?php
-function _device_installed_fields() {
+function _device_installed_fields()
+{
     $t = get_t();
     return array(
         'device_deviceid' => array(
@@ -16,31 +17,34 @@ function _device_installed_fields() {
             'field_name' => 'device_delay',
             'label' => $t('Delay time (high to low) of the device'),
             'type' => 'number_integer'
+        ),
+        'device_pin_number' => array(
+            'field_name' => 'device_pin_number',
+            'label' => $t('Pin number (e.g D5)'),
+            'type' => 'text'
         )
     );
 }
 
 // implementation of hook_field_create_instance()
 // sets all labels to Hidden for new fields
-function device_field_create_instance($instance){
-  // fetch the instance info
-  $instance_info = field_info_instance(
-    $instance['entity_type'],
-    $instance['field_name'],
-    $instance['bundle']
-  );
-
-  // set label in each display to hidden
-  foreach( $instance_info['display'] as &$display ){
-    $display['label'] = 'hidden';
-    $display['format'] = 'hidden';
-  }
-
-  // save back to disk
-  field_update_instance($instance_info);
+function device_field_create_instance($instance)
+{
+    // fetch the instance info
+    $instance_info = field_info_instance($instance['entity_type'], $instance['field_name'], $instance['bundle']);
+    
+    // set label in each display to hidden
+    foreach ($instance_info['display'] as &$display) {
+        $display['label']  = 'hidden';
+        $display['format'] = 'hidden';
+    }
+    
+    // save back to disk
+    field_update_instance($instance_info);
 }
 
-function _device_installed_instances() {
+function _device_installed_instances()
+{
     $t = get_t();
     return array(
         'device_deviceid' => array(
@@ -52,8 +56,8 @@ function _device_installed_instances() {
             ),
             'display' => array(
                 'device_deviceid_list' => array(
-                  'label' => 'hidden',
-                  'type' => 'text'
+                    'label' => 'hidden',
+                    'type' => 'text'
                 )
             )
         ),
@@ -66,33 +70,50 @@ function _device_installed_instances() {
             ),
             'display' => array(
                 'device_accesstoken_list' => array(
-                  'label' => 'hidden',
-                  'type' => 'text'
+                    'label' => 'hidden',
+                    'type' => 'text'
                 )
             )
         ),
         'device_delay' => array(
-          'field_name' => 'device_delay',
-          'type' => 'text',
-          'label' => $t('Delay time (high to low) of the device'),
-          'widget' => array(
-              'type' => 'number_integer'
-          ),
-          'display' => array(
-              'device_delay' => array(
-                'label' => 'hidden',
-                'type' => 'text'
-              )
-          )
-      )
+            'field_name' => 'device_delay',
+            'type' => 'text',
+            'label' => $t('Delay time (high to low) of the device'),
+            'widget' => array(
+                'type' => 'number_integer'
+            ),
+            'display' => array(
+                'device_delay' => array(
+                    'label' => 'hidden',
+                    'type' => 'text'
+                )
+            )
+        ),
+        'device_pin_number' => array(
+            'field_name' => 'device_pin_number',
+            'type' => 'text',
+            'label' => $t('Pin number (e.g D5)'),
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+            'display' => array(
+                'device_pin_number' => array(
+                    'label' => 'hidden',
+                    'type' => 'text'
+                )
+            )
+        )
     );
 }
 
-function device_uninstall() {
+function device_uninstall()
+{
     $ournewtype = 'device';
-    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
-    $result = db_query($sql, array(':type' => $ournewtype));
-    $nodeids = array();
+    $sql        = 'SELECT nid FROM {node} n WHERE n.type = :type';
+    $result     = db_query($sql, array(
+        ':type' => $ournewtype
+    ));
+    $nodeids    = array();
     foreach ($result as $row) {
         $nodeids[] = $row->nid;
     }
@@ -102,7 +123,8 @@ function device_uninstall() {
     field_purge_batch(500);
 }
 
-function delete_custom_fields() {
+function delete_custom_fields()
+{
     foreach (array_keys(_device_installed_fields()) as $field) {
         field_delete_field($field);
     }
@@ -115,42 +137,44 @@ function delete_custom_fields() {
 /**
  * Add new field to field data and revision tables.
  */
-function device_update_7500(&$sandbox) {
+function device_update_7500(&$sandbox)
+{
     $myField_name = "device_pin";
-    if(!field_info_field($myField_name)) // check if the field already exists.
-    {
+    if (!field_info_field($myField_name)) // check if the field already exists.
+        {
         $field = array(
-            'field_name'    => $myField_name,
-            'type'          => 'text',
+            'field_name' => $myField_name,
+            'type' => 'text'
         );
         field_create_field($field);
-
+        
         $field_instance = array(
-          'field_name' => $myField_name,
-          'type' => 'text',
-          'label'         => t('Desired pin number for the device (e.g D0, D1 etc)'),
-          'widget' => array(
-              'type' => 'text_textfield'
-          ),
-          'display' => array(
-              'device_accesstoken_list' => array(
-                'label' => 'hidden',
-                'type' => 'text'
-              )
-          )
+            'field_name' => $myField_name,
+            'type' => 'text',
+            'label' => t('Desired pin number for the device (e.g D0, D1 etc)'),
+            'widget' => array(
+                'type' => 'text_textfield'
+            ),
+            'display' => array(
+                'device_accesstoken_list' => array(
+                    'label' => 'hidden',
+                    'type' => 'text'
+                )
+            )
         );
         field_create_instance($field_instance);
         drupal_set_message("Field created successfully!");
     }
 }
 
-function add_custom_fields() {
+function add_custom_fields()
+{
     foreach (_device_installed_fields() as $field) {
         field_create_field($field);
     }
     foreach (_device_installed_instances() as $fieldinstance) {
         $fieldinstance['entity_type'] = 'node';
-        $fieldinstance['bundle'] = 'device';
+        $fieldinstance['bundle']      = 'device';
         print_r($fieldinstance);
         field_create_instance($fieldinstance);
     }
@@ -159,7 +183,8 @@ function add_custom_fields() {
 /**
  * Implements hook_install().
  */
-function device_install() {
+function device_install()
+{
     node_types_rebuild();
     $types = node_type_get_types();
     node_add_body_field($types['device']);

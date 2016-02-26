@@ -29,18 +29,17 @@ function doors_menu_block_view($delta = '') {
             die("Access denied");
           }
 
-          $items = field_get_items('node', $node, 'device_accesstoken');
-
           $id = field_get_items('node', $node, 'device_deviceid')[0]['value'];
           $at = field_get_items('node', $node, 'device_accesstoken')[0]['value'];
           $delay = field_get_items('node', $node, 'device_delay')[0]['value'];
+          $pin = field_get_items('node', $node, 'device_pin_number')[0]['value'];
 
           $ch = curl_init();
           $url = "https://api.spark.io/v1/devices/". $id ."/toggleLock";
 
           curl_setopt($ch, CURLOPT_URL, $url);
           curl_setopt($ch, CURLOPT_POST, 1);
-          curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=" . $at . "&arg=" . $delay);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=" . $at . "&arg=" . $delay . "_" . $pin);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
           $content = curl_exec ($ch);
           curl_close ($ch);
@@ -72,6 +71,7 @@ function doors_menu_block_view($delta = '') {
         if (!node_access('view', $node)) {
           continue;
         }
+
         $options = array('absolute' => TRUE);
         $url = url('node/' . $node->nid, $options);
         $content .= "<div>". $node->title ."</div><input style='padding:10px; width: 100%;' value='Open / Close' onclick='clickLock(". $node->nid .")' type='button'>";
