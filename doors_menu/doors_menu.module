@@ -41,6 +41,8 @@ function doors_menu_block_view($delta = '') {
           curl_setopt($ch, CURLOPT_POST, 1);
           curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=" . $at . "&arg=" . $delay . "_" . $pin);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+          curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+          curl_setopt($ch, CURLOPT_TIMEOUT, 1);
           $content = curl_exec ($ch);
           curl_close ($ch);
           //echo $content;
@@ -65,7 +67,7 @@ function doors_menu_block_view($delta = '') {
         $nodes = node_load_multiple($nids);
       }
 
-      $content = "<script>function clickLock(lId) { window.location.href='/?clicked_id=' + lId };</script>";
+      $content = "<script>function clickLock(lId) { document.getElementById('OICbuttonsContainer').innerHTML='Even geduld...'; window.location.href='/?clicked_id=' + lId };</script><div id='OICbuttonsContainer'>";
       $list = array();
       foreach ($nodes as $node) {
         if (!node_access('view', $node)) {
@@ -77,6 +79,8 @@ function doors_menu_block_view($delta = '') {
         $content .= "<div>". $node->title ."</div><input style='padding:10px; width: 100%;' value='Open / Close' onclick='clickLock(". $node->nid .")' type='button'>";
         $list[] = ''.$node->title.'';
       }
+
+      $content .= '</div>';
 
       $block = array(
         'subject' => t('My doors'),
