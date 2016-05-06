@@ -46,6 +46,10 @@ function doors_menu_block_view($delta = '') {
           $content = curl_exec ($ch);
           curl_close ($ch);
           //echo $content;
+          
+          $url=strtok($_SERVER["REQUEST_URI"],'?');
+          header('location: ' . $url); 
+          die();
       }
 
       //Based on the node types create a query and then load the node types
